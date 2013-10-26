@@ -1,12 +1,14 @@
-# Be sure to restart your server when you modify this file.
+require 'securerandom'
 
-# Your secret key is used for verifying the integrity of signed cookies.
-# If you change this key, all old signed cookies will become invalid!
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    File.read(token_file).chomp
+  else
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
 
-# Make sure the secret is at least 30 characters and all random,
-# no regular words or you'll be exposed to dictionary attacks.
-# You can use `rake secret` to generate a secure secret key.
-
-# Make sure your secret_key_base is kept private
-# if you're sharing your code publicly.
-RailsTwitter::Application.config.secret_key_base = 'd51f058de7c2ddd71c040db84532d8c3d84f22da8c3f275bb4a110b4004efa1bc7a711946ba3568b52a75b82e64e12b3e840ffef0e92da24aab2bd600ee7884f'
+RailsTwitter::Application.config.secret_key_base = secure_token
